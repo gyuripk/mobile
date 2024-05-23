@@ -1,28 +1,31 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, StyleSheet, Text, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function SignupScreen({ navigation }) {
+export default function SignupScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const API_URL = "http://localhost:3000";
 
   const handleSignup = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
-      return;
-    }
-
-    // 임시로 로컬 상태에 저장 (실제 앱에서는 서버에 사용자 정보를 저장해야 함)
     try {
-      await AsyncStorage.setItem(
-        "user",
-        JSON.stringify({ username, password })
-      );
-      Alert.alert("Success", "Account created successfully!");
-      navigation.navigate("Login"); // 회원가입 후 로그인 화면으로 이동
+      const response = await fetch(`${API_URL}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "User created successfully");
+      } else {
+        Alert.alert("Error", data.message);
+      }
     } catch (error) {
-      Alert.alert("Error", "Failed to save the user data.");
+      Alert.alert("Error", "An error occurred. Please try again.");
     }
   };
 
@@ -42,20 +45,7 @@ export default function SignupScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
       <Button title="Sign Up" onPress={handleSignup} />
-      <Text
-        style={styles.loginText}
-        onPress={() => navigation.navigate("Login")}
-      >
-        Already have an account? Log In
-      </Text>
     </View>
   );
 }
@@ -73,10 +63,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
-  },
-  loginText: {
-    marginTop: 20,
-    color: "blue",
-    textAlign: "center",
   },
 });

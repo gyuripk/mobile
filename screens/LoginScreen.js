@@ -6,26 +6,29 @@ export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    // 이 부분은 실제 API 호출로 대체되어야 합니다.
-    // 현재는 로컬에서 간단한 유효성 검사로 처리합니다.
-    if (username === "test" && password === "password") {
-      //username이 'test'이고, password가 'password'일 때만 로그인이 성공하도록 되어 있습니다.
-      try {
-        await AsyncStorage.setItem("token", "dummy-auth-token");
-        navigation.navigate("Main"); // Main 화면으로 이동
-      } catch (error) {
-        Alert.alert("Error", "Failed to save the token.");
-      }
-    } else {
-      Alert.alert("Login Failed", "Invalid username or password");
-    }
-  };
+  const API_URL = "http://localhost:3000";
 
-  const handleSignup = () => {
-    // 회원가입 화면으로 이동하는 로직 추가
-    navigation.navigate("Signup"); // SignupScreen이 준비되면 사용
-    // Alert.alert("Signup", "Signup screen not implemented yet.");
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${API_URL}/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await AsyncStorage.setItem("token", data.token);
+        navigation.navigate("Main");
+      } else {
+        Alert.alert("Error", data.message);
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -45,7 +48,10 @@ export default function LoginScreen({ navigation }) {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
-      <Text style={styles.signupText} onPress={handleSignup}>
+      <Text
+        style={styles.signupText}
+        onPress={() => navigation.navigate("Signup")}
+      >
         Don't have an account? Sign Up
       </Text>
     </View>
