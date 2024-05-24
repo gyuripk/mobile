@@ -20,64 +20,6 @@ import { ThemeProvider } from "./context/theme"; // text size
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator(); //중복?
 
-// export default function App() {
-//   const [isSplashVisible, setIsSplashVisible] = useState(true);
-
-// const Stack = createNativeStackNavigator(); //???중복?
-
-//   function MyStack() {
-//     return (
-//       <Stack.Navigator>
-//         <Stack.Screen name="NoteListScreen" component={NoteListScreen} />
-//         <Stack.Screen name="NoteScreen" component={NoteScreen} />
-//       </Stack.Navigator>
-//     );
-//   }
-
-//   return (
-//     <NavigationContainer>
-//       <ThemeProvider theme={{}}>
-//         {isSplashVisible ? (
-//           <SplashScreen setSplashScreenVisible={setIsSplashVisible} />
-//         ) : (
-//           <Tab.Navigator
-//             screenOptions={({ route }) => ({
-//               tabBarIcon: ({ color, size }) => {
-//                 let iconName;
-//                 if (route.name === "Notes") {
-//                   iconName = "book";
-//                 } else if (route.name === "Setting") {
-//                   iconName = "cog";
-//                 } else if (route.name === "About") {
-//                   iconName = "info-circle";
-//                 }
-//                 return (
-//                   <FontAwesome5 name={iconName} size={size} color={color} />
-//                 );
-//               },
-//               tabBarActiveTintColor: "tomato",
-//               tabBarInactiveTintColor: "gray",
-//               tabBarStyle: [
-//                 {
-//                   display: "flex",
-//                 },
-//                 null,
-//               ],
-//             })}
-//           >
-//             <Tab.Screen name="Notes" component={MyStack} />
-//             {/* <Tab.Screen name="Notes" component={NoteListScreen} /> */}
-//             <Tab.Screen name="Setting" component={SettingScreen} />
-//             <Tab.Screen name="About" component={AboutScreen} />
-//           </Tab.Navigator>
-//         )}
-//       </ThemeProvider>
-//     </NavigationContainer>
-//   );
-// }
-
-//---------------------------------------------
-
 function MainTabs() {
   return (
     <Tab.Navigator

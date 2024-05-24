@@ -7,20 +7,40 @@ import {
   StyleSheet,
   Button,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalStyles } from "../styles/global";
-import NoteScreen from "./NoteScreen"; // NoteScreen 컴포넌트를 임포트
 
 export default function NoteListScreen({ navigation }) {
   const [notes, setNotes] = useState([]);
 
+  const API_URL = "http://localhost:3000";
+
   useEffect(() => {
-    // 로컬 임시 데이터
-    const localNotes = [
-      { id: 1, title: "First Note" },
-      { id: 2, title: "Second Note" },
-      { id: 3, title: "Third Note" },
-    ];
-    setNotes(localNotes);
+    const fetchNotes = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        const response = await fetch(`${API_URL}/notes`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Authorization:
+            //   "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiZXhwIjoxNzE2NjAyODIzLCJpYXQiOjE3MTY1MTY0MjN9.nP1VvI3_oQLutaFyqQePa9ENz3kFiRBIP6EagL9ZX5w", // 필요한 경우 토큰을 헤더에 포함
+          },
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText || "Failed to fetch notes");
+        }
+        const data = await response.json();
+        setNotes(data);
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+      }
+    };
+
+    fetchNotes();
   }, []);
 
   const globalStyles = GlobalStyles();
@@ -29,14 +49,15 @@ export default function NoteListScreen({ navigation }) {
     <View style={styles.container}>
       <FlatList
         data={notes}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.user_id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.note}
             onPress={() =>
               navigation.navigate("NoteScreen", {
-                noteId: item.id,
+                noteId: item.note_id,
                 noteTitle: item.title,
+                noteContent: item.content, // noteContent 추가 전달
               })
             }
           >
