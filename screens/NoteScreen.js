@@ -8,6 +8,7 @@ import {
   Text,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GlobalStyles } from "../styles/global";
 
 export default function NoteScreen({ route, navigation }) {
   const { noteId, noteTitle, noteContent } = route.params || {};
@@ -15,6 +16,7 @@ export default function NoteScreen({ route, navigation }) {
   const [content, setContent] = useState(noteContent || "");
   // console.log("NoteScreen:", { noteId, noteTitle });
   const API_URL = "http://localhost:3000"; // 서버의 API URL
+  const globalStyles = GlobalStyles();
 
   useEffect(() => {
     if (noteId !== null) {
@@ -90,24 +92,26 @@ export default function NoteScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, globalStyles.text]}
         placeholder="Title"
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, globalStyles.text]}
         placeholder="Content"
         value={content}
         onChangeText={setContent}
         multiline
       />
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Save</Text>
+      <TouchableOpacity style={globalStyles.button} onPress={handleSave}>
+        <Text style={[styles.buttonText, globalStyles.text]}>Save</Text>
       </TouchableOpacity>
       {noteId !== null && (
-        <TouchableOpacity style={styles.button} onPress={handleDelete}>
-          <Text style={styles.buttonText}>Delete</Text>
+        <TouchableOpacity style={globalStyles.button} onPress={handleDelete}>
+          <Text style={[globalStyles.buttonText, globalStyles.text]}>
+            Delete
+          </Text>
         </TouchableOpacity>
       )}
     </View>

@@ -1,9 +1,22 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet, Text, Alert } from "react-native";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Button,
+  StyleSheet,
+  Text,
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native"; // useNavigation 훅 추가
+import { GlobalStyles } from "../styles/global";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const globalStyles = GlobalStyles();
+  const navigation = useNavigation(); // navigation 객체 가져오기
 
   const API_URL = "http://localhost:3000";
 
@@ -18,9 +31,9 @@ export default function SignupScreen() {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         Alert.alert("Success", "User created successfully");
+        navigation.navigate("Login"); // 회원가입 성공 시 로그인 페이지로 이동
       } else {
         Alert.alert("Error", data.message);
       }
@@ -32,20 +45,27 @@ export default function SignupScreen() {
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, globalStyles.text]}
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, globalStyles.text]}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign Up" onPress={handleSignup} />
+      <TouchableOpacity style={globalStyles.button} onPress={handleSignup}>
+        <Text style={[globalStyles.buttonText, globalStyles.text]}>
+          Sign Up
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <Text style={globalStyles.text}>Already have an account? Login</Text>
+      </TouchableOpacity>
     </View>
   );
 }

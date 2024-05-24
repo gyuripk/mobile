@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from "react"; // useState와 useEffect 추가
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack"; //추가
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-// import NewsScreen from "./screens/NewsScreen";
 import SettingScreen from "./screens/SettingScreen";
-import SplashScreen from "./screens/SplashScreen"; //스플래쉬 화면 추가
-import AboutScreen from "./screens/AboutScreen"; // Import AboutScreen
+import SplashScreen from "./screens/SplashScreen";
+import AboutScreen from "./screens/AboutScreen";
 import NoteListScreen from "./screens/NoteListScreen";
 import NoteScreen from "./screens/NoteScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
 
-import { ThemeProvider } from "./context/theme"; // text size
+import { ThemeProvider } from "./context/theme";
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator(); //중복?
+const Stack = createNativeStackNavigator();
 
 function MainTabs() {
   return (
@@ -35,20 +32,36 @@ function MainTabs() {
           }
           return <FontAwesome5 name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "tomato",
+        tabBarActiveTintColor: "orange",
         tabBarInactiveTintColor: "gray",
-        tabBarStyle: [
-          {
-            display: "flex",
-          },
-          null,
-        ],
+        tabBarShowLabel: false, // 라벨 숨기기
       })}
     >
-      <Tab.Screen name="Notes" component={NoteListScreen} />
+      <Tab.Screen
+        name="Notes"
+        component={NoteListScreen}
+        options={{ headerShown: false }}
+      />
       <Tab.Screen name="Setting" component={SettingScreen} />
       <Tab.Screen name="About" component={AboutScreen} />
     </Tab.Navigator>
+  );
+}
+
+function MainStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="MainTabs"
+        component={MainTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NoteScreen"
+        component={NoteScreen}
+        options={{ headerTintColor: "orange" }}
+      />
+    </Stack.Navigator>
   );
 }
 
@@ -58,29 +71,15 @@ export default function App() {
   return (
     <NavigationContainer>
       <ThemeProvider theme={{}}>
-        <Stack.Navigator>
-          {/* 헤더를 숨김 */}
-          {isSplashVisible ? (
-            <Stack.Screen
-              name="Splash"
-              screenOptions={{ headerShown: false }}
-              children={() => (
-                <SplashScreen setSplashScreenVisible={setIsSplashVisible} />
-              )}
-            />
-          ) : (
-            <>
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-                screenOptions={{ headerShown: false }}
-              />
-              <Stack.Screen name="Signup" component={SignupScreen} />
-              <Stack.Screen name="Main" component={MainTabs} />
-              <Stack.Screen name="NoteScreen" component={NoteScreen} />
-            </>
-          )}
-        </Stack.Navigator>
+        {isSplashVisible ? (
+          <SplashScreen setSplashScreenVisible={setIsSplashVisible} />
+        ) : (
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Signup" component={SignupScreen} />
+            <Stack.Screen name="Main" component={MainStack} />
+          </Stack.Navigator>
+        )}
       </ThemeProvider>
     </NavigationContainer>
   );
