@@ -5,7 +5,6 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalStyles } from "../styles/global";
@@ -13,35 +12,37 @@ import { GlobalStyles } from "../styles/global";
 export default function NoteListScreen({ navigation }) {
   const [notes, setNotes] = useState([]);
 
-  const API_URL = "http://localhost:3000";
+  const API_URL = "http://localhost:3000"; // 서버의 API URL
+
+  const fetchNotes = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      const response = await fetch(`${API_URL}/notes`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText || "Failed to fetch notes");
+      }
+      const data = await response.json();
+      setNotes(data);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        if (!token) {
-          throw new Error("No token found");
-        }
-
-        const response = await fetch(`${API_URL}/notes`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            // Authorization:
-            //   "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiZXhwIjoxNzE2NjAyODIzLCJpYXQiOjE3MTY1MTY0MjN9.nP1VvI3_oQLutaFyqQePa9ENz3kFiRBIP6EagL9ZX5w", // 필요한 경우 토큰을 헤더에 포함
-          },
-        });
-        if (!response.ok) {
-          throw new Error(response.statusText || "Failed to fetch notes");
-        }
-        const data = await response.json();
-        setNotes(data);
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-      }
-    };
-
     fetchNotes();
-  }, []);
+    const focusListener = navigation.addListener("focus", fetchNotes);
+    return () => {
+      focusListener();
+    };
+  }, [navigation]);
 
   const globalStyles = GlobalStyles();
 
@@ -49,7 +50,7 @@ export default function NoteListScreen({ navigation }) {
     <View style={styles.container}>
       <FlatList
         data={notes}
-        keyExtractor={(item) => item.user_id.toString()}
+        keyExtractor={(item) => item.note_id.toString()} // 고유한 키로 'note_id' 사용
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.note}
@@ -65,10 +66,12 @@ export default function NoteListScreen({ navigation }) {
           </TouchableOpacity>
         )}
       />
-      <Button
-        title="Add Note"
+      <TouchableOpacity
+        style={styles.addButton}
         onPress={() => navigation.navigate("NoteScreen", { noteId: null })}
-      />
+      >
+        <Text style={styles.addButtonText}>Add Note</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -85,6 +88,17 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ccc",
   },
   noteTitle: {
+    fontSize: 18,
+  },
+  addButton: {
+    backgroundColor: "#007BFF",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 16,
+  },
+  addButtonText: {
+    color: "#fff",
     fontSize: 18,
   },
 });
