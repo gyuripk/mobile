@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalLayout } from "../components/Layout";
@@ -13,6 +14,8 @@ import { GlobalStyles } from "../styles/global";
 
 export default function NoteListScreen({ navigation }) {
   const [notes, setNotes] = useState([]);
+  const [filteredNotes, setFilteredNotes] = useState([]); // 추가된 부분
+  const [searchQuery, setSearchQuery] = useState(""); // 추가된 부분
 
   const API_URL = "http://localhost:3000";
   const globalStyles = GlobalStyles();
@@ -34,6 +37,7 @@ export default function NoteListScreen({ navigation }) {
       }
       const data = await response.json();
       setNotes(data);
+      setFilteredNotes(data); // 필터링된 노트도 설정
     } catch (error) {
       console.error("Error fetching notes:", error);
     }
@@ -47,11 +51,34 @@ export default function NoteListScreen({ navigation }) {
     };
   }, [navigation]);
 
+  // searchQuery가 변경될 때마다 필터링된 노트를 업데이트
+  useEffect(() => {
+    if (searchQuery === "") {
+      setFilteredNotes(notes);
+    } else {
+      setFilteredNotes(
+        notes.filter(
+          (note) =>
+            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            note.content.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+  }, [searchQuery, notes]);
+
   return (
     <GlobalLayout>
       <View style={styles.container}>
+        {/* 검색 바 추가된 부분 */}
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search notes..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
         <FlatList
-          data={notes}
+          data={filteredNotes} // 수정된 부분: notes -> filteredNotes
+          //   data={notes}
           keyExtractor={(item) => item.note_id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -93,6 +120,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#e6e6e6", //스크린 컨테이너 배경색
     padding: 10,
   },
+  searchBar: {
+    // 추가된 부분
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
   note: {
     backgroundColor: "#fff",
     padding: 20,
@@ -127,32 +166,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
-    fontSize: 24, // 폰트 크기 증가
-    fontWeight: "bold", // 텍스트 굵게
+    fontSize: 24,
+    fontWeight: "bold",
   },
-  //   addButton: {
-  //     // backgroundColor: "orange",
-  //     // padding: 16,
-  //     // borderRadius: 8,
-  //     // alignItems: "center",
-  //     // marginTop: 16,
-  //     // addButton: {
-  //     backgroundColor: "orange", // 색상 유지
-  //     paddingVertical: 10, // 세로 패딩 조절
-  //     paddingHorizontal: 20, // 가로 패딩 추가
-  //     borderRadius: 20, // 더 둥근 모서리
-  //     alignItems: "center",
-  //     justifyContent: "center", // 텍스트를 버튼 중앙에 위치
-  //     elevation: 3, // 그림자 효과를 위한 엘리베이션 추가
-  //     shadowColor: "#000", // 그림자 색
-  //     shadowOffset: { width: 0, height: 2 }, // 그림자 위치
-  //     shadowOpacity: 0.25, // 그림자 투명도
-  //     shadowRadius: 3.84, // 그림자 블러 반경
-  //     marginTop: 16,
-  //   },
-  //   addButtonText: {
-  //     color: "#fff",
-  //     fontSize: 18,
-  //     fontWeight: "bold", // 텍스트 굵게
-  //   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Image,
@@ -42,6 +42,17 @@ export default function LoginScreen({ navigation }) {
       Alert.alert("Error", "An error occurred. Please try again.");
     }
   };
+
+  //useEffect를 사용하여 컴포넌트가 마운트될 때 입력 필드를 초기화
+  // Reset inputs when the screen is focused
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      setUsername("");
+      setPassword("");
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <GlobalLayout>
