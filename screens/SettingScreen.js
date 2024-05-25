@@ -65,7 +65,7 @@ export default function SettingScreen({ navigation }) {
 
   return (
     <GlobalLayout>
-      <View style={styles.view}>
+      <View style={globalStyles.container}>
         <Switch
           value={isLargeText}
           onValueChange={async () => {

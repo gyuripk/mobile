@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalStyles } from "../styles/global";
+import { GlobalLayout } from "../components/Layout";
+import { format } from "date-fns";
 
 export default function NoteScreen({ route, navigation }) {
   const { noteId, noteTitle, noteContent } = route.params || {};
@@ -52,7 +54,11 @@ export default function NoteScreen({ route, navigation }) {
       }
 
       const data = await response.json();
-      Alert.alert("Success", "Note saved successfully");
+      if (method == "POST") {
+        Alert.alert("Success", "Note saved successfully");
+      } else {
+        Alert.alert("Success", "Note updated successfully");
+      }
       // navigation.goBack();
       // 노트 수정 시 상태 업데이트
       setTitle(data.title);
@@ -90,31 +96,33 @@ export default function NoteScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={[styles.input, globalStyles.text]}
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        style={[styles.input, globalStyles.text]}
-        placeholder="Content"
-        value={content}
-        onChangeText={setContent}
-        multiline
-      />
-      <TouchableOpacity style={globalStyles.button} onPress={handleSave}>
-        <Text style={[styles.buttonText, globalStyles.text]}>Save</Text>
-      </TouchableOpacity>
-      {noteId !== null && (
-        <TouchableOpacity style={globalStyles.button} onPress={handleDelete}>
-          <Text style={[globalStyles.buttonText, globalStyles.text]}>
-            Delete
-          </Text>
+    <GlobalLayout>
+      <View style={styles.container}>
+        <TextInput
+          style={[styles.input, globalStyles.title]}
+          placeholder="Title"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <TextInput
+          style={[styles.input, globalStyles.text]}
+          placeholder="Content"
+          value={content}
+          onChangeText={setContent}
+          multiline
+        />
+        <TouchableOpacity style={globalStyles.button} onPress={handleSave}>
+          <Text style={[styles.buttonText, globalStyles.text]}>Save</Text>
         </TouchableOpacity>
-      )}
-    </View>
+        {noteId !== null && (
+          <TouchableOpacity style={globalStyles.button} onPress={handleDelete}>
+            <Text style={[globalStyles.buttonText, globalStyles.text]}>
+              Delete
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </GlobalLayout>
   );
 }
 

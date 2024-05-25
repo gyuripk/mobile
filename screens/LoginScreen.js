@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   View,
+  Image,
   TextInput,
   TouchableOpacity,
   Button,
@@ -45,6 +46,10 @@ export default function LoginScreen({ navigation }) {
   return (
     <GlobalLayout>
       <View style={styles.container}>
+        <Image
+          style={styles.image}
+          source={require("../assets/orange.png")} // Replace with the path to your image
+        />
         <TextInput
           style={[styles.input, globalStyles.text]}
           placeholder="Username"
@@ -79,15 +84,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center", // Add this line
     padding: 16,
     backgroundColor: "#fff",
   },
+  image: {
+    width: 200, // Or whatever size you want
+    height: 200, // Or whatever size you want
+    marginBottom: 20, // Add some margin if you want
+  },
   input: {
+    width: "100%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
   },
   button: {
     backgroundColor: "#007BFF",

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -23,10 +24,10 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Notes") {
-            iconName = "book";
-          } else if (route.name === "Setting") {
+          if (route.name === "Setting") {
             iconName = "cog";
+          } else if (route.name === "Notes") {
+            iconName = "book";
           } else if (route.name === "About") {
             iconName = "info-circle";
           }
@@ -35,6 +36,9 @@ function MainTabs() {
         tabBarActiveTintColor: "orange",
         tabBarInactiveTintColor: "gray",
         tabBarShowLabel: false, // 라벨 숨기기
+        tabBarStyle: {
+          backgroundColor: "#fff", // 다크 모드에 맞는 색상
+        },
       })}
     >
       <Tab.Screen
@@ -42,25 +46,29 @@ function MainTabs() {
         component={NoteListScreen}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="Setting" component={SettingScreen} />
-      <Tab.Screen name="About" component={AboutScreen} />
+      <Tab.Screen
+        name="Setting"
+        component={SettingScreen}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="About"
+        component={AboutScreen}
+        options={{ headerShown: false }}
+      />
     </Tab.Navigator>
   );
 }
 
 function MainStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="MainTabs"
-        component={MainTabs}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="NoteScreen"
-        component={NoteScreen}
-        options={{ headerTintColor: "orange" }}
-      />
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen name="NoteScreen" component={NoteScreen} />
     </Stack.Navigator>
   );
 }
@@ -70,7 +78,9 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <ThemeProvider theme={{}}>
+      <ThemeProvider>
+        {/* Remove theme prop */}
+        {/* <ThemeProvider theme={{}}> */}
         {isSplashVisible ? (
           <SplashScreen setSplashScreenVisible={setIsSplashVisible} />
         ) : (
