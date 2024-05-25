@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTheme } from "../context/theme";
 
 export default function SplashScreen({ setSplashScreenVisible }) {
+  const { isDarkMode } = useTheme(); // 다크 모드 상태 가져오기
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setSplashScreenVisible(false); // SplashScreen을 숨김
@@ -10,8 +13,10 @@ export default function SplashScreen({ setSplashScreenVisible }) {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Notes App</Text>
+    <View style={[styles.container, isDarkMode && { backgroundColor: "#000" }]}>
+      <Text style={[styles.text, isDarkMode && { color: "#fff" }]}>
+        Notes App
+      </Text>
     </View>
   );
 }
@@ -26,5 +31,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 32,
     fontWeight: "bold",
+    color: "#000",
   },
 });

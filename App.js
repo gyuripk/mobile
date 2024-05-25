@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -13,12 +17,14 @@ import NoteScreen from "./screens/NoteScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
 
-import { ThemeProvider } from "./context/theme";
+import { ThemeProvider, useTheme } from "./context/theme";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
+  const { isDarkMode } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -37,7 +43,7 @@ function MainTabs() {
         tabBarInactiveTintColor: "gray",
         tabBarShowLabel: false, // 라벨 숨기기
         tabBarStyle: {
-          backgroundColor: "#fff", // 다크 모드에 맞는 색상
+          backgroundColor: isDarkMode ? "#333" : "#fff", // 다크 모드에 맞는 색상
         },
       })}
     >
@@ -61,26 +67,43 @@ function MainTabs() {
 }
 
 function MainStack() {
+  const { isDarkMode } = useTheme();
+
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerStyle: {
+          backgroundColor: isDarkMode ? "#000" : "#fff",
+        },
+        headerTintColor: isDarkMode ? "#fff" : "#000",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
       }}
     >
-      <Stack.Screen name="MainTabs" component={MainTabs} />
-      <Stack.Screen name="NoteScreen" component={NoteScreen} />
+      <Stack.Screen
+        name="MainTabs"
+        component={MainTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NoteScreen"
+        component={NoteScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
 
 export default function App() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
+  // const { isDarkMode } = useTheme();
 
   return (
+    // <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
     <NavigationContainer>
       <ThemeProvider>
-        {/* Remove theme prop */}
-        {/* <ThemeProvider theme={{}}> */}
+        {/* <StatusBar style={isDarkMode ? "light" : "dark"} /> */}
         {isSplashVisible ? (
           <SplashScreen setSplashScreenVisible={setIsSplashVisible} />
         ) : (

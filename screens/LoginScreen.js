@@ -4,7 +4,6 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  Button,
   StyleSheet,
   Text,
   Alert,
@@ -12,8 +11,10 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalLayout } from "../components/Layout";
 import { GlobalStyles } from "../styles/global";
+import { useTheme } from "../context/theme";
 
 export default function LoginScreen({ navigation }) {
+  const { isDarkMode } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -43,8 +44,7 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  //useEffect를 사용하여 컴포넌트가 마운트될 때 입력 필드를 초기화
-  // Reset inputs when the screen is focused
+  // useEffect를 사용하여 컴포넌트가 마운트될 때 입력 필드를 초기화
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       setUsername("");
@@ -56,21 +56,31 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <GlobalLayout>
-      <View style={styles.container}>
+      <View style={[styles.container, isDarkMode && styles.containerDark]}>
         <Image
           style={styles.image}
           source={require("../assets/orange.png")} // Replace with the path to your image
         />
         <TextInput
-          style={[styles.input, globalStyles.text]}
+          style={[
+            styles.input,
+            globalStyles.text,
+            isDarkMode && styles.inputDark,
+          ]}
           placeholder="Username"
+          placeholderTextColor={isDarkMode ? "#ccc" : "#999"}
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
         />
         <TextInput
-          style={[styles.input, globalStyles.text]}
+          style={[
+            styles.input,
+            globalStyles.text,
+            isDarkMode && styles.inputDark,
+          ]}
           placeholder="Password"
+          placeholderTextColor={isDarkMode ? "#ccc" : "#999"}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -95,33 +105,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center", // Add this line
+    alignItems: "center",
     padding: 16,
     backgroundColor: "#fff",
   },
+  containerDark: {
+    backgroundColor: "#333",
+  },
   image: {
-    width: 200, // Or whatever size you want
-    height: 200, // Or whatever size you want
-    marginBottom: 20, // Add some margin if you want
+    width: 200,
+    height: 200,
+    marginBottom: 20,
   },
   input: {
-    width: "100%",
+    width: "60%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 16,
+    borderRadius: 10, // 추가된 부분: 둥근 테두리 설정
   },
-  button: {
-    backgroundColor: "#007BFF",
-    padding: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 16,
-  },
-  buttonText: {
+  inputDark: {
+    borderColor: "#555",
+    backgroundColor: "#444",
     color: "#fff",
-    fontSize: 18,
+    borderRadius: 10, // 추가된 부분: 다크모드에서도 둥근 테두리 설정
   },
   signupText: {
     marginTop: 20,

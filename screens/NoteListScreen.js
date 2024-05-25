@@ -11,6 +11,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalLayout } from "../components/Layout";
 import { format } from "date-fns";
 import { GlobalStyles } from "../styles/global";
+import { useTheme } from "../context/theme"; // 추가된 부분
+import { FontAwesome5 } from "@expo/vector-icons"; // 아이콘 추가
+import { it } from "date-fns/locale";
 
 export default function NoteListScreen({ navigation }) {
   const [notes, setNotes] = useState([]);
@@ -19,6 +22,7 @@ export default function NoteListScreen({ navigation }) {
 
   const API_URL = "http://localhost:3000";
   const globalStyles = GlobalStyles();
+  const { isDarkMode, isLargeText } = useTheme(); // 추가된 부분
 
   const fetchNotes = async () => {
     try {
@@ -68,43 +72,80 @@ export default function NoteListScreen({ navigation }) {
 
   return (
     <GlobalLayout>
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          isDarkMode && { backgroundColor: "#333" }, // 다크 모드 스타일 적용
+        ]}
+      >
         {/* 검색 바 추가된 부분 */}
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search notes..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View
+          style={[
+            styles.searchContainer,
+            isDarkMode && { backgroundColor: "#555", color: "#fff" },
+            isLargeText && styles.searchContainerLarge,
+          ]}
+        >
+          <FontAwesome5
+            name="search"
+            size={isLargeText ? 24 : 16}
+            color={isDarkMode ? "#fff" : "#888"}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={[
+              styles.searchBar,
+              isDarkMode && { color: "#fff" },
+              isLargeText && styles.searchBarLarge,
+            ]}
+            placeholder="Search notes..."
+            placeholderTextColor={isDarkMode ? "#aaa" : "#888"} // 다크 모드에 맞게 placeholder 색상 변경
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
         <FlatList
           data={filteredNotes} // 수정된 부분: notes -> filteredNotes
-          //   data={notes}
           keyExtractor={(item) => item.note_id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.note}
+              style={[styles.note, isDarkMode && { backgroundColor: "#444" }]}
               onPress={() =>
                 navigation.navigate("NoteScreen", {
                   noteId: item.note_id,
                   noteTitle: item.title,
                   noteContent: item.content,
+                  noteCreatedAt: item.created_at,
+                  noteModifiedAt: item.modified_at,
                 })
               }
             >
               <View style={styles.noteHeader}>
-                <Text style={globalStyles.title}>{item.title}</Text>
-                <Text style={globalStyles.date}>
+                <Text
+                  style={[globalStyles.title, isDarkMode && { color: "#fff" }]}
+                >
+                  {item.title}
+                </Text>
+                <Text
+                  style={[globalStyles.date, isDarkMode && { color: "#bbb" }]}
+                >
                   {format(new Date(item.created_at), "dd MMM yyyy")}
                 </Text>
               </View>
-              <Text style={globalStyles.time}>
+              <Text
+                style={[globalStyles.time, isDarkMode && { color: "#bbb" }]}
+              >
                 {format(new Date(item.created_at), "HH:mm")}
               </Text>
             </TouchableOpacity>
           )}
+          showsVerticalScrollIndicator={false} // 스크롤 바 숨김
         />
         <TouchableOpacity
-          style={styles.addButton}
+          style={[
+            styles.addButton,
+            isDarkMode && { backgroundColor: "#ff9900" },
+          ]}
           onPress={() => navigation.navigate("NoteScreen", { noteId: null })}
         >
           <Text style={(styles.addButtonText, globalStyles.text)}>+</Text>
@@ -117,13 +158,13 @@ export default function NoteListScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e6e6e6", //스크린 컨테이너 배경색
-    padding: 10,
+    // padding: 10,
   },
-  searchBar: {
-    // 추가된 부분
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#fff",
-    padding: 10,
+    padding: 20,
     borderRadius: 10,
     marginBottom: 20,
     shadowColor: "#000",
@@ -131,17 +172,61 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 2,
+    fontSize: 16,
+    borderColor: "#ccc",
+
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  searchContainerLarge: {
+    padding: 20,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchBar: {
+    flex: 1,
+    fontSize: 16,
+    // borderWidth: 1,
+    // borderColor: "#ccc", // 기본 테두리 색상
+    borderRadius: 10,
+  },
+  searchBarLarge: {
+    fontSize: 24,
   },
   note: {
+    // backgroundColor: "#fff",
+    // padding: 20,
+    // borderRadius: 10,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 5 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 8,
+    // elevation: 4,
+    // marginBottom: 20,
+
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
+    marginBottom: 17,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 4,
-    marginBottom: 20,
+    elevation: 2,
+
+    marginLeft: 10,
+    marginRight: 10,
+
+    // backgroundColor: "#fff",
+    // padding: 20,
+    // borderRadius: 10,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 10 }, // 오프셋 변경
+    // shadowOpacity: 0.25, // 그림자 불투명도 증가
+    // shadowRadius: 20, // 그림자 반경 증가
+    // elevation: 10, // 그림자 깊이 증가
+    // marginBottom: 20,
   },
   noteHeader: {
     flexDirection: "row",
