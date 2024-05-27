@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalLayout } from "../components/Layout";
@@ -15,7 +16,7 @@ import { useTheme } from "../context/theme"; // 추가된 부분
 import { FontAwesome5 } from "@expo/vector-icons"; // 아이콘 추가
 import { it } from "date-fns/locale";
 
-export default function NoteListScreen({ navigation }) {
+export default function NoteListScreen({ route, navigation }) {
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]); // 추가된 부분
   const [searchQuery, setSearchQuery] = useState(""); // 추가된 부분
@@ -44,18 +45,33 @@ export default function NoteListScreen({ navigation }) {
       setFilteredNotes(data); // 필터링된 노트도 설정
     } catch (error) {
       console.error("Error fetching notes:", error);
+      Alert.alert("Error", error.message);
     }
   };
 
+  // 컴포넌트가 마운트될 때 노트 목록을 가져옴
   useEffect(() => {
     fetchNotes();
-    const focusListener = navigation.addListener("focus", fetchNotes);
-    return () => {
-      navigation.removeListener("focus", fetchNotes);
-    };
-  }, [navigation]);
+  }, []);
 
-  // searchQuery가 변경될 때마다 필터링된 노트를 업데이트
+  useEffect(() => {
+    // fetchNotes();
+    // notesUpdated 파라미터의 값 가져오기
+    const notesUpdated = route.params?.notesUpdated || false;
+
+    if (notesUpdated) {
+      fetchNotes();
+
+      // notesUpdated 파라미터를 다시 false로 설정
+      navigation.setOptions({ notesUpdated: false });
+    }
+    // const focusListener = navigation.addListener("focus", fetchNotes);
+    // return () => {
+    //   navigation.removeListener("focus", fetchNotes);
+    // };
+  }, [navigation, route.params]);
+
+  // 검색 기능 searchQuery가 변경될 때마다 필터링된 노트를 업데이트
   useEffect(() => {
     if (searchQuery === "") {
       setFilteredNotes(notes);

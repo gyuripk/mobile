@@ -13,6 +13,7 @@ import { GlobalLayout } from "../components/Layout";
 import { format } from "date-fns";
 import { useTheme } from "../context/theme";
 import { FontAwesome5 } from "@expo/vector-icons";
+import NoteListScreen from "./NoteListScreen";
 
 export default function NoteScreen({ route, navigation }) {
   const { noteId, noteTitle, noteContent, noteCreatedAt, noteModifiedAt } =
@@ -20,7 +21,7 @@ export default function NoteScreen({ route, navigation }) {
   const [title, setTitle] = useState(noteTitle || "");
   const [content, setContent] = useState(noteContent || "");
   const { isDarkMode, isLargeText } = useTheme();
-  const API_URL = "http://localhost:3000"; // 서버의 API URL
+  const API_URL = "http://localhost:3000";
   const globalStyles = GlobalStyles();
 
   useEffect(() => {
@@ -63,6 +64,8 @@ export default function NoteScreen({ route, navigation }) {
       }
       setTitle(data.title);
       setContent(data.content);
+      // 노트가 업데이트되었음을 알림
+      navigation.navigate("Notes", { notesUpdated: true });
     } catch (error) {
       console.error("Error saving note:", error);
       Alert.alert("Error", "Failed to save note");
@@ -88,7 +91,9 @@ export default function NoteScreen({ route, navigation }) {
       }
 
       Alert.alert("Success", "Note deleted successfully");
-      navigation.goBack();
+      // 노트가 업데이트되었음을 알림
+      navigation.navigate("Notes", { notesUpdated: true });
+      // navigation.goBack();
     } catch (error) {
       console.error("Error deleting note:", error);
       Alert.alert("Error", "Failed to delete note");
@@ -144,9 +149,6 @@ export default function NoteScreen({ route, navigation }) {
               color="orange"
               style={styles.buttonIcon}
             />
-            {/* <Text style={[styles.buttonText, globalStyles.text]}>
-            Save Changes
-          </Text> */}
           </TouchableOpacity>
           {noteId !== null && (
             <TouchableOpacity
@@ -159,7 +161,6 @@ export default function NoteScreen({ route, navigation }) {
                 color="red"
                 style={styles.buttonIcon}
               />
-              {/* <Text style={[styles.buttonText, globalStyles.text]}>Delete</Text> */}
             </TouchableOpacity>
           )}
         </View>
@@ -187,32 +188,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
     padding: 10,
-    textAlignVertical: "top", // Android에서 텍스트가 입력란 상단에 위치하도록 함
+    textAlignVertical: "top",
   },
   dateContainer: {
     marginBottom: 80,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between", // 두 버튼을 양쪽에 배치합니다.
+    justifyContent: "space-between",
     position: "absolute",
     right: 20,
     bottom: 20,
   },
   saveButton: {
-    paddingVertical: 10, // 세로 패딩을 줄입니다.
-    paddingHorizontal: 20, // 가로 패딩을 조절합니다.
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
-    // marginHorizontal: 5, // 버튼 간의 간격을 추가합니다.
+    // marginHorizontal: 5,
     flexDirection: "row",
   },
   deleteButton: {
-    paddingVertical: 10, // 세로 패딩을 줄입니다.
-    paddingHorizontal: 20, // 가로 패딩을 조절합니다.
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
-    // marginHorizontal: 5, // 버튼 간의 간격을 추가합니다.
+    // marginHorizontal: 5,
     flexDirection: "row",
   },
   buttonText: {
