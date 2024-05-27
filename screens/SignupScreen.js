@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../styles/global";
 import { useTheme } from "../context/theme"; // 다크 모드 사용을 위한 추가
+import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
@@ -50,6 +51,13 @@ export default function SignupScreen() {
         isDarkMode && { backgroundColor: "#333" }, // 다크 모드일 때 배경색 변경
       ]}
     >
+      {/* Add the icon above the Username input */}
+      <FontAwesome5
+        name="user"
+        size={180}
+        color={isDarkMode ? "#fff" : "orange"}
+        style={styles.icon}
+      />
       <TextInput
         style={[
           styles.input,
@@ -130,5 +138,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: "blue",
     textAlign: "center",
+  },
+  icon: {
+    marginBottom: 10, // Add margin to position the icon properly
   },
 });

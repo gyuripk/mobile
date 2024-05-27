@@ -19,7 +19,7 @@ export default function NoteScreen({ route, navigation }) {
     route.params || {};
   const [title, setTitle] = useState(noteTitle || "");
   const [content, setContent] = useState(noteContent || "");
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, isLargeText } = useTheme();
   const API_URL = "http://localhost:3000"; // 서버의 API URL
   const globalStyles = GlobalStyles();
 
@@ -140,7 +140,7 @@ export default function NoteScreen({ route, navigation }) {
           <TouchableOpacity style={[styles.saveButton]} onPress={handleSave}>
             <FontAwesome5
               name="save"
-              size={20}
+              size={isLargeText ? 25 : 20}
               color="orange"
               style={styles.buttonIcon}
             />
@@ -155,7 +155,7 @@ export default function NoteScreen({ route, navigation }) {
             >
               <FontAwesome5
                 name="trash"
-                size={20}
+                size={isLargeText ? 25 : 20}
                 color="red"
                 style={styles.buttonIcon}
               />
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   titleInput: {
-    fontSize: 24,
+    fontSize: 27,
     fontWeight: "bold",
     marginBottom: 20,
     borderBottomWidth: 1,

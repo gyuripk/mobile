@@ -3,8 +3,8 @@ import { useTheme } from "../context/theme";
 
 export function GlobalStyles() {
   const { isLargeText, isDarkMode } = useTheme();
-  const baseFontSize = 20;
-  const titleFontSize = 16;
+  const baseFontSize = 16;
+  const titleFontSize = 20;
   const dateFontSize = 14;
   const timeFontSize = 13;
   const styles = StyleSheet.create({
