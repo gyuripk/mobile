@@ -8,9 +8,10 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
+import * as SplashScreen from "expo-splash-screen";
 
 import SettingScreen from "./screens/SettingScreen";
-import SplashScreen from "./screens/SplashScreen";
+// import SplashScreen from "./screens/SplashScreen";
 import AboutScreen from "./screens/AboutScreen";
 import NoteListScreen from "./screens/NoteListScreen";
 import NoteScreen from "./screens/NoteScreen";
@@ -96,23 +97,39 @@ function MainStack() {
 }
 
 export default function App() {
-  const [isSplashVisible, setIsSplashVisible] = useState(true);
-  // const { isDarkMode } = useTheme();
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Keep the splash screen visible while we fetch resources
+        await SplashScreen.preventAutoHideAsync();
+        // Load fonts, images, and all necessary data here
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+        // When everything is loaded, hide the splash screen
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
+  }, []);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   return (
-    // <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
     <NavigationContainer>
       <ThemeProvider>
-        {/* <StatusBar style={isDarkMode ? "light" : "dark"} /> */}
-        {isSplashVisible ? (
-          <SplashScreen setSplashScreenVisible={setIsSplashVisible} />
-        ) : (
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Signup" component={SignupScreen} />
-            <Stack.Screen name="Main" component={MainStack} />
-          </Stack.Navigator>
-        )}
+        <StatusBar style="auto" />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Signup" component={SignupScreen} />
+          <Stack.Screen name="Main" component={MainStack} />
+        </Stack.Navigator>
       </ThemeProvider>
     </NavigationContainer>
   );

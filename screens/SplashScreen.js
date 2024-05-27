@@ -4,12 +4,12 @@ import { useTheme } from "../context/theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function SplashScreen({ setSplashScreenVisible }) {
-  const { isDarkMode } = useTheme(); // 다크 모드 상태 가져오기
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setSplashScreenVisible(false); // SplashScreen을 숨김
-    }, 2000); // 2초 후에 메인 화면으로 이동
+      setSplashScreenVisible(false);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -18,7 +18,7 @@ export default function SplashScreen({ setSplashScreenVisible }) {
       <FontAwesome5
         name="lemon"
         size={100}
-        color={isDarkMode ? "#fff" : "#fff"} // 다크 모드에서 오렌지 색상
+        color={isDarkMode ? "#fff" : "#fff"}
         style={styles.icon}
       />
       <Text style={[styles.text, isDarkMode && styles.darkText]}>
@@ -33,20 +33,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFA500", // 귤색 배경
+    backgroundColor: "#FFA500",
   },
   darkContainer: {
-    backgroundColor: "#333", // 다크 모드 배경 색상
+    backgroundColor: "#333",
   },
   icon: {
-    marginBottom: 20, // 아이콘과 텍스트 사이의 여백 추가
+    marginBottom: 20,
   },
   text: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#fff", // 텍스트 색상을 흰색으로 변경
+    color: "#fff",
   },
   darkText: {
-    color: "#FFA500", // 다크 모드에서 귤색 텍스트
+    color: "#FFA500",
   },
 });
