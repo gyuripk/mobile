@@ -11,7 +11,6 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import * as SplashScreen from "expo-splash-screen";
 
 import SettingScreen from "./screens/SettingScreen";
-// import SplashScreen from "./screens/SplashScreen";
 import AboutScreen from "./screens/AboutScreen";
 import NoteListScreen from "./screens/NoteListScreen";
 import NoteScreen from "./screens/NoteScreen";
@@ -42,9 +41,9 @@ function MainTabs() {
         },
         tabBarActiveTintColor: "orange",
         tabBarInactiveTintColor: "gray",
-        tabBarShowLabel: false, // 라벨 숨기기
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: isDarkMode ? "#333" : "#fff", // 다크 모드에 맞는 색상
+          backgroundColor: isDarkMode ? "#333" : "#fff",
         },
       })}
     >
@@ -102,14 +101,11 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Keep the splash screen visible while we fetch resources
         await SplashScreen.preventAutoHideAsync();
-        // Load fonts, images, and all necessary data here
       } catch (e) {
         console.warn(e);
       } finally {
         setAppIsReady(true);
-        // When everything is loaded, hide the splash screen
         await SplashScreen.hideAsync();
       }
     }

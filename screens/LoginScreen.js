@@ -12,39 +12,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalLayout } from "../components/Layout";
 import { GlobalStyles } from "../styles/global";
 import { useTheme } from "../context/theme";
+import useLogin from "../hooks/useLogin";
 
 export default function LoginScreen({ navigation }) {
   const { isDarkMode } = useTheme();
+  const { handleLogin, isLoading, error } = useLogin(navigation); // 훅 사용
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const API_URL = "http://localhost:3000";
   const globalStyles = GlobalStyles();
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch(`${API_URL}/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        await AsyncStorage.setItem("token", data.token);
-        navigation.navigate("Main");
-      } else {
-        Alert.alert("Error", data.message);
-      }
-    } catch (error) {
-      Alert.alert("Error", "An error occurred. Please try again.");
-    }
-  };
-
-  // useEffect를 사용하여 컴포넌트가 마운트될 때 입력 필드를 초기화
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       setUsername("");
@@ -57,10 +35,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <GlobalLayout>
       <View style={[styles.container, isDarkMode && styles.containerDark]}>
-        <Image
-          style={styles.image}
-          source={require("../assets/orange.png")} // Replace with the path to your image
-        />
+        <Image style={styles.image} source={require("../assets/orange.png")} />
         <TextInput
           style={[
             styles.input,
@@ -85,9 +60,13 @@ export default function LoginScreen({ navigation }) {
           onChangeText={setPassword}
           secureTextEntry
         />
-        <TouchableOpacity style={globalStyles.button} onPress={handleLogin}>
+        <TouchableOpacity
+          style={globalStyles.button}
+          onPress={() => handleLogin(username, password)}
+          disabled={isLoading}
+        >
           <Text style={[globalStyles.buttonText, globalStyles.text]}>
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </Text>
         </TouchableOpacity>
         <Text
@@ -124,13 +103,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 16,
-    borderRadius: 10, // 추가된 부분: 둥근 테두리 설정
+    borderRadius: 10,
   },
   inputDark: {
     borderColor: "#555",
     backgroundColor: "#444",
     color: "#fff",
-    borderRadius: 10, // 추가된 부분: 다크모드에서도 둥근 테두리 설정
+    borderRadius: 10,
   },
   signupText: {
     marginTop: 20,

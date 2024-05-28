@@ -13,7 +13,8 @@ import { GlobalLayout } from "../components/Layout";
 import { format } from "date-fns";
 import { useTheme } from "../context/theme";
 import { FontAwesome5 } from "@expo/vector-icons";
-import NoteListScreen from "./NoteListScreen";
+import useSaveNote from "../hooks/useSaveNote";
+import useDeleteNote from "../hooks/useDeleteNote";
 
 export default function NoteScreen({ route, navigation }) {
   const { noteId, noteTitle, noteContent, noteCreatedAt, noteModifiedAt } =
@@ -21,7 +22,12 @@ export default function NoteScreen({ route, navigation }) {
   const [title, setTitle] = useState(noteTitle || "");
   const [content, setContent] = useState(noteContent || "");
   const { isDarkMode, isLargeText } = useTheme();
-  const API_URL = "http://localhost:3000";
+  const { saveNote, isLoading: isSaving, error: saveError } = useSaveNote();
+  const {
+    deleteNote,
+    isLoading: isDeleting,
+    error: deleteError,
+  } = useDeleteNote();
   const globalStyles = GlobalStyles();
 
   useEffect(() => {
@@ -31,73 +37,16 @@ export default function NoteScreen({ route, navigation }) {
     }
   }, [noteId]);
 
-  const handleSave = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
-      const method = noteId ? "PUT" : "POST";
-      const endpoint = noteId
-        ? `${API_URL}/notes/${noteId}`
-        : `${API_URL}/notes`;
-
-      const response = await fetch(endpoint, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title, content }),
-      });
-
-      if (!response.ok) {
-        throw new Error(response.statusText || "Failed to save note");
-      }
-
-      const data = await response.json();
-      if (method == "POST") {
-        Alert.alert("Success", "Note saved successfully");
-      } else {
-        Alert.alert("Success", "Note updated successfully");
-      }
-      setTitle(data.title);
-      setContent(data.content);
-      // 노트가 업데이트되었음을 알림
-      navigation.navigate("Notes", { notesUpdated: true });
-    } catch (error) {
-      console.error("Error saving note:", error);
-      Alert.alert("Error", "Failed to save note");
+  const handleSave = () => {
+    const note = { title, content };
+    if (noteId) {
+      note.id = noteId;
     }
+    saveNote(note, noteId, navigation);
   };
 
-  const handleDelete = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
-      const response = await fetch(`${API_URL}/notes/${noteId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(response.statusText || "Failed to delete note");
-      }
-
-      Alert.alert("Success", "Note deleted successfully");
-      // 노트가 업데이트되었음을 알림
-      navigation.navigate("Notes", { notesUpdated: true });
-      // navigation.goBack();
-    } catch (error) {
-      console.error("Error deleting note:", error);
-      Alert.alert("Error", "Failed to delete note");
-    }
+  const handleDelete = () => {
+    deleteNote(noteId, navigation);
   };
 
   return (
@@ -142,7 +91,11 @@ export default function NoteScreen({ route, navigation }) {
           </View>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.saveButton]} onPress={handleSave}>
+          <TouchableOpacity
+            style={[styles.saveButton]}
+            onPress={handleSave}
+            disabled={isSaving}
+          >
             <FontAwesome5
               name="save"
               size={isLargeText ? 25 : 20}
@@ -154,6 +107,7 @@ export default function NoteScreen({ route, navigation }) {
             <TouchableOpacity
               style={[styles.deleteButton]}
               onPress={handleDelete}
+              disabled={isDeleting}
             >
               <FontAwesome5
                 name="trash"

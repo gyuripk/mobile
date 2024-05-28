@@ -12,89 +12,33 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalLayout } from "../components/Layout";
 import { format } from "date-fns";
 import { GlobalStyles } from "../styles/global";
-import { useTheme } from "../context/theme"; // 추가된 부분
-import { FontAwesome5 } from "@expo/vector-icons"; // 아이콘 추가
+import { useTheme } from "../context/theme";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { it } from "date-fns/locale";
+import useFetchNotes from "../hooks/useFetchNotes";
 
 export default function NoteListScreen({ route, navigation }) {
-  const [notes, setNotes] = useState([]);
-  const [filteredNotes, setFilteredNotes] = useState([]); // 추가된 부분
-  const [searchQuery, setSearchQuery] = useState(""); // 추가된 부분
+  const { notes, filteredNotes, searchQuery, setSearchQuery, fetchNotes } =
+    useFetchNotes();
 
-  const API_URL = "http://localhost:3000";
   const globalStyles = GlobalStyles();
-  const { isDarkMode, isLargeText } = useTheme(); // 추가된 부분
-
-  const fetchNotes = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
-      const response = await fetch(`${API_URL}/notes`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error(response.statusText || "Failed to fetch notes");
-      }
-      const data = await response.json();
-      setNotes(data);
-      setFilteredNotes(data); // 필터링된 노트도 설정
-    } catch (error) {
-      console.error("Error fetching notes:", error);
-      Alert.alert("Error", error.message);
-    }
-  };
-
-  // 컴포넌트가 마운트될 때 노트 목록을 가져옴
-  useEffect(() => {
-    fetchNotes();
-  }, []);
+  const { isDarkMode, isLargeText } = useTheme();
 
   useEffect(() => {
-    // fetchNotes();
-    // notesUpdated 파라미터의 값 가져오기
     const notesUpdated = route.params?.notesUpdated || false;
 
     if (notesUpdated) {
       fetchNotes();
 
-      // notesUpdated 파라미터를 다시 false로 설정
       navigation.setOptions({ notesUpdated: false });
     }
-    // const focusListener = navigation.addListener("focus", fetchNotes);
-    // return () => {
-    //   navigation.removeListener("focus", fetchNotes);
-    // };
   }, [navigation, route.params]);
-
-  // 검색 기능 searchQuery가 변경될 때마다 필터링된 노트를 업데이트
-  useEffect(() => {
-    if (searchQuery === "") {
-      setFilteredNotes(notes);
-    } else {
-      setFilteredNotes(
-        notes.filter(
-          (note) =>
-            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            note.content.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
-  }, [searchQuery, notes]);
 
   return (
     <GlobalLayout>
       <View
-        style={[
-          styles.container,
-          isDarkMode && { backgroundColor: "#333" }, // 다크 모드 스타일 적용
-        ]}
+        style={[styles.container, isDarkMode && { backgroundColor: "#333" }]}
       >
-        {/* 검색 바 추가된 부분 */}
         <View
           style={[
             styles.searchContainer,
@@ -115,13 +59,13 @@ export default function NoteListScreen({ route, navigation }) {
               isLargeText && styles.searchBarLarge,
             ]}
             placeholder="Search notes..."
-            placeholderTextColor={isDarkMode ? "#aaa" : "#888"} // 다크 모드에 맞게 placeholder 색상 변경
+            placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
         <FlatList
-          data={filteredNotes} // 수정된 부분: notes -> filteredNotes
+          data={filteredNotes}
           keyExtractor={(item) => item.note_id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -155,7 +99,7 @@ export default function NoteListScreen({ route, navigation }) {
               </Text>
             </TouchableOpacity>
           )}
-          showsVerticalScrollIndicator={false} // 스크롤 바 숨김
+          showsVerticalScrollIndicator={false}
         />
         <TouchableOpacity
           style={[
@@ -174,7 +118,6 @@ export default function NoteListScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 10,
   },
   searchContainer: {
     flexDirection: "row",
@@ -190,7 +133,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     fontSize: 16,
     borderColor: "#ccc",
-
     marginLeft: 10,
     marginRight: 10,
   },
@@ -203,24 +145,12 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     fontSize: 16,
-    // borderWidth: 1,
-    // borderColor: "#ccc", // 기본 테두리 색상
     borderRadius: 10,
   },
   searchBarLarge: {
     fontSize: 24,
   },
   note: {
-    // backgroundColor: "#fff",
-    // padding: 20,
-    // borderRadius: 10,
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 5 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 8,
-    // elevation: 4,
-    // marginBottom: 20,
-
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
@@ -230,19 +160,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 2,
-
     marginLeft: 10,
     marginRight: 10,
-
-    // backgroundColor: "#fff",
-    // padding: 20,
-    // borderRadius: 10,
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 10 }, // 오프셋 변경
-    // shadowOpacity: 0.25, // 그림자 불투명도 증가
-    // shadowRadius: 20, // 그림자 반경 증가
-    // elevation: 10, // 그림자 깊이 증가
-    // marginBottom: 20,
   },
   noteHeader: {
     flexDirection: "row",
@@ -250,20 +169,20 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   addButton: {
-    position: "absolute", // 버튼을 화면의 오른쪽 아래에 고정
-    right: 20, // 오른쪽에서 20 유닛 떨어진 위치
-    bottom: 20, // 하단에서 20 유닛 떨어진 위치
-    backgroundColor: "orange", // 색상 유지
-    width: 60, // 버튼의 너비
-    height: 60, // 버튼의 높이
-    borderRadius: 30, // 원형 버튼 만들기 (너비와 높이의 반)
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    backgroundColor: "orange",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 8, // 그림자 효과를 위한 엘리베이션 추가 (안드로이드)
-    shadowColor: "#000", // 그림자 색
-    shadowOffset: { width: 0, height: 4 }, // 그림자 위치
-    shadowOpacity: 0.3, // 그림자 투명도
-    shadowRadius: 4.65, // 그림자 블러 반경
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
   addButtonText: {
     color: "#fff",

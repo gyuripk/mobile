@@ -1,10 +1,8 @@
-// export default AboutScreen;
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { GlobalStyles } from "../styles/global";
 import { GlobalLayout } from "../components/Layout";
 
-// 라이선스 정보를 가져오기 위한 require
 const licenses = require("../assets/mobile-licenses.json");
 
 const AboutScreen = () => {
@@ -12,7 +10,6 @@ const AboutScreen = () => {
   const [licenseData, setLicenseData] = useState([]);
 
   useEffect(() => {
-    // 라이선스 데이터를 상태에 설정
     setLicenseData(Object.entries(licenses));
   }, []);
 
