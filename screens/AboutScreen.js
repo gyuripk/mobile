@@ -9,6 +9,7 @@ const AboutScreen = () => {
   const globalStyles = GlobalStyles();
   const [licenseData, setLicenseData] = useState([]);
 
+  // Load license data when the component mounts
   useEffect(() => {
     setLicenseData(Object.entries(licenses));
   }, []);

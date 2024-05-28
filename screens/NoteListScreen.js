@@ -24,12 +24,14 @@ export default function NoteListScreen({ route, navigation }) {
   const globalStyles = GlobalStyles();
   const { isDarkMode, isLargeText } = useTheme();
 
+  // Effect to handle notes updated from NoteScreen
   useEffect(() => {
     const notesUpdated = route.params?.notesUpdated || false;
 
     if (notesUpdated) {
+      // Fetch updated notes
       fetchNotes();
-
+      // Reset the notesUpdated parameter
       navigation.setOptions({ notesUpdated: false });
     }
   }, [navigation, route.params]);

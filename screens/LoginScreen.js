@@ -16,13 +16,13 @@ import useLogin from "../hooks/useLogin";
 
 export default function LoginScreen({ navigation }) {
   const { isDarkMode } = useTheme();
-  const { handleLogin, isLoading, error } = useLogin(navigation); // 훅 사용
+  const { handleLogin, isLoading, error } = useLogin(navigation); // Use login hook
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const API_URL = "http://localhost:3000";
   const globalStyles = GlobalStyles();
 
+  // Reset username and password fields when the screen is focused
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       setUsername("");

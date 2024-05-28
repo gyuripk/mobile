@@ -14,6 +14,7 @@ const useSignup = () => {
     setError(null);
 
     try {
+      // Make API request to register user
       const response = await fetch(`${API_URL}/users/register`, {
         method: "POST",
         headers: {
@@ -31,6 +32,7 @@ const useSignup = () => {
         setError(data.message);
       }
     } catch (error) {
+      // Handle network or unexpected errors
       Alert.alert("Error", "An error occurred. Please try again.");
       setError("An error occurred. Please try again.");
     } finally {

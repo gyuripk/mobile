@@ -12,6 +12,7 @@ export default function SettingScreen({ navigation }) {
 
   const globalStyles = GlobalStyles();
 
+  // Update AsyncStorage with the new isLargeText value whenever it changes
   useEffect(() => {
     const updateIsLargeText = async () => {
       await AsyncStorage.setItem("isLargeText", JSON.stringify(isLargeText));
@@ -20,6 +21,7 @@ export default function SettingScreen({ navigation }) {
     updateIsLargeText();
   }, [isLargeText]);
 
+  // Update AsyncStorage with the new isDarkMode value whenever it changes
   useEffect(() => {
     const updateIsDarkMode = async () => {
       await AsyncStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));

@@ -15,6 +15,7 @@ const useFetchNotes = () => {
         throw new Error("No token found");
       }
 
+      // Fetch notes with the token in the Authorization header
       const response = await fetch(`${API_URL}/notes`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -32,11 +33,12 @@ const useFetchNotes = () => {
     }
   };
 
+  // Fetch notes on component mount
   useEffect(() => {
     fetchNotes();
   }, []);
 
-  // filter notes when searchQuery changes
+  // Filter notes based on the search query
   useEffect(() => {
     if (searchQuery === "") {
       setFilteredNotes(notes);

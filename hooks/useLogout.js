@@ -13,6 +13,7 @@ const useLogout = () => {
     setError(null);
 
     try {
+      // Remove token from AsyncStorage to log out
       await AsyncStorage.removeItem("token");
       navigation.navigate("Login");
     } catch (error) {

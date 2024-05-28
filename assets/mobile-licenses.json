@@ -1,4 +1,10 @@
 {
+  "citrus scribbles": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rbfl6418/mobile",
+    "licenseUrl": "https://github.com/rbfl6418/mobile/raw/main/LICENSE",
+    "parents": "666w7"
+  },
   "@ampproject/remapping@2.3.0": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/ampproject/remapping",

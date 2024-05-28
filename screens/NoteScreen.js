@@ -30,6 +30,7 @@ export default function NoteScreen({ route, navigation }) {
   } = useDeleteNote();
   const globalStyles = GlobalStyles();
 
+  // Set the title and content state with the note details if noteId is not null
   useEffect(() => {
     if (noteId !== null) {
       setTitle(noteTitle || "");
@@ -37,6 +38,7 @@ export default function NoteScreen({ route, navigation }) {
     }
   }, [noteId]);
 
+  // Handle saving the note, either by creating a new note or updating an existing one
   const handleSave = () => {
     const note = { title, content };
     if (noteId) {

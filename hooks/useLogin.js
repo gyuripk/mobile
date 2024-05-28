@@ -12,6 +12,7 @@ const useLogin = (navigation) => {
     setError(null);
 
     try {
+      // Make a POST request to the login endpoint
       const response = await fetch(`${API_URL}/users/login`, {
         method: "POST",
         headers: {
@@ -22,7 +23,9 @@ const useLogin = (navigation) => {
 
       const data = await response.json();
 
+      // If the response is OK, save the token and navigate to the main screen
       if (response.ok) {
+        // Save the token in AsyncStorage
         await AsyncStorage.setItem("token", data.token);
         navigation.navigate("Main");
       } else {
@@ -30,6 +33,7 @@ const useLogin = (navigation) => {
         setError(data.message);
       }
     } catch (error) {
+      // Handle any other errors that occur during the request
       Alert.alert("Error", "An error occurred. Please try again.");
       setError(error.message);
     } finally {
